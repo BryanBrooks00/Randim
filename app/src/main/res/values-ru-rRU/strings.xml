@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Randim</string>
+    <string name="start">Старт</string>
+    <string name="stop">Стоп</string>
+    <string name="set_time">Интервал замены обоев, мин</string>
+    <string name="tags">Теги</string>
+    <string name="no_text">Пожалуйста, заполните все поля</string>
+    <string name="notification">Randim запущен...</string>
+    <string name="no_network">Не удаётся подключиться к сети</string>
+</resources>
