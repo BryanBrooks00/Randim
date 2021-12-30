@@ -8,6 +8,7 @@ public class Preferences {
     private static final String PREF_LAST_TAG = "lastTag";
     private static final String PREF_LAST_TIME = "lastTime";
     private static final String PREF_LAST_INDEX = "lastIndex";
+    private static final String PREF_STATE_INDEX = "stateIndex";
 
     public static String getLastTag(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
@@ -38,5 +39,25 @@ public class Preferences {
                 .edit()
                 .putString(PREF_LAST_INDEX, lastResult)
                 .apply();
+    }
+
+    public static void setStateIndex(Context context, String index) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .putString(PREF_STATE_INDEX, index)
+                .apply();
+    }
+
+    public static String getStateIndex(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(PREF_STATE_INDEX, null);
+    }
+
+    public static void clearPreferences(Context context, String index) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .clear()
+                .apply();
+        Preferences.setStateIndex(context, index);
     }
 }

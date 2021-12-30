@@ -1,53 +1,50 @@
 package com.darwin.randim;
 
-import android.app.IntentService;
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
-import android.os.CountDownTimer;
+import android.os.Build;
 import android.os.IBinder;
-import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
-public class BackgroundService extends IntentService {
-    private static final String API_KEY = "e11de7c416d222e8b12dbf5a735cadc6";
-    private  static final  String SEARCH = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=" + API_KEY + "&format=json&nojsoncallback=1&text=";
+import java.util.concurrent.TimeUnit;
+
+public class BackgroundService extends Service {
     private static final String SEARCH_METHOD = "flickr.photos.search";
-
-
-    private static final String TAG = "MY_LOG";
-    NotificationManager notificationManager;
-    Intent intent;
-    PendingIntent pendingIntent;
-    final String channelId = "CHANNEL_ID";
-    final int id = 1;
-    int i = 0;
+    private static final String TAG = "BackgroundService.class";
+    public static long INTERVAL_MS = TimeUnit.MINUTES.toMillis(1);
 
     public static Intent newIntent(Context context) {
         return new Intent(context, BackgroundService.class);
     }
-    public BackgroundService() {
-        super(TAG);
-    }
-    @Override
-    protected void onHandleIntent(Intent intent) {
-        if (!isNetworkAvailableAndConnected()) {
-            return;
-        }
-        Log.i(TAG, "Received an intent: " + intent);
-        String tag = Preferences.getLastTag(this);
-        if (tag == null) {
-           Log.i(TAG, "Preferences = " + tag);
-        } else {
-            new Connection().buildUrl(SEARCH_METHOD, tag);
-            Log.i(TAG, "Preferences = " + tag);
-        }
 
+    protected void startJob() {
+        Thread thread = new Thread() {
+            public void run() {
 
+                Log.i(TAG, "Service was started");
+                if (!isNetworkAvailableAndConnected()) {
+                    Log.i(TAG, "Network is not available ");
+                }
+                String tag = Preferences.getLastTag(MainActivity.getContext());
+                if (tag == null) {
+                    Log.i(TAG, "NULL Preferences = " + tag);
+                } else {
+                    new Connection().buildUrl(SEARCH_METHOD, tag);
+                    Log.i(TAG, "Preferences = " + tag);
+                }
+            }
+        };
+        thread.start();
     }
 
     private boolean isNetworkAvailableAndConnected() {
@@ -59,10 +56,68 @@ public class BackgroundService extends IntentService {
         return isNetworkConnected;
     }
 
+    public static void setServiceAlarm(Context context, boolean isOn) {
+        INTERVAL_MS = Long.parseLong(Preferences.getLastTime(context)) * 1000 * 60;
+        Intent i = BackgroundService.newIntent(context);
+        PendingIntent pi = PendingIntent.getService(context, 0, i, 0);
+        AlarmManager alarmManager = (AlarmManager)
+                context.getSystemService(Context.ALARM_SERVICE);
+        if (isOn) {
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
+                    System.currentTimeMillis(), INTERVAL_MS, pi);
+            Log.i(TAG, "AlarmManager set repeating");
+        } else {
+            alarmManager.cancel(pi);
+            pi.cancel();
+            Log.i(TAG, "AlarmManager was canceled");
+        }
+    }
+
+    @Override
+    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        startJob();
+        return BackgroundService.START_REDELIVER_INTENT;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        if (Build.VERSION.SDK_INT >= 26) {
+            String CHANNEL_ID = "my_channel_01";
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
+                    "Channel human readable title",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+
+            ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
+
+            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.notification_icon)
+                    .setContentTitle(getResources().getString(R.string.app_name))
+                    .setContentText(getResources().getString(R.string.notification)).build();
+
+            startForeground(1, notification);
+        }
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        Log.i(TAG, "onTaskRemoved");
+        setServiceAlarm(getApplicationContext(), true);
+        super.onTaskRemoved(rootIntent);
+    }
+
     @Override
     public void onDestroy() {
         Log.i(TAG, "Service was stop");
     }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 }
+
 
 

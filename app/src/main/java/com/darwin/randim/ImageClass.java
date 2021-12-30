@@ -4,7 +4,9 @@ import android.app.WallpaperManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.WindowManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +16,7 @@ import java.net.URLConnection;
 
 public class ImageClass {
 
-    private static final String TAG = "MY_LOG";
+    private static final String TAG = "ImageClass.class";
 
     protected Bitmap getBitmap(String url){
         Bitmap bitmap = DownloadImage(url);
@@ -64,12 +66,20 @@ public class ImageClass {
 
     public void setWallpaper(Bitmap bitmap){
         WallpaperManager wManager;
-
+        Context context = MainActivity.getContext().getApplicationContext();
+        wManager = WallpaperManager.getInstance(context);
         try {
-            //bitmap = BitmapFactory.decodeFile(null);
-            Context context = MainActivity.getContext();
-            wManager = WallpaperManager.getInstance(context);
-            wManager.setBitmap(bitmap);
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+            if (windowManager != null) {
+                windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+            }
+            int width = wManager.getDesiredMinimumWidth();
+            int height = wManager.getDesiredMinimumHeight();
+            Bitmap newBitmap = Bitmap.createScaledBitmap(bitmap,width,height, true);
+            wManager.setWallpaperOffsetSteps(1, 1);
+            wManager.suggestDesiredDimensions(width, height);
+            wManager.setBitmap(newBitmap);
             Log.i(TAG, "WALLPAPER SET");
         } catch (IOException e) {
             e.printStackTrace();

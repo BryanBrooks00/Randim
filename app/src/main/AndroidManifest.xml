@@ -19,8 +19,9 @@
         >
 
         <service
-            android:name=".BackgroundService"
-            android:exported="false"/>
+            android:name="com.darwin.randim.BackgroundService"
+            android:exported="true"/>
+
 
         <activity
             android:name=".MainActivity"

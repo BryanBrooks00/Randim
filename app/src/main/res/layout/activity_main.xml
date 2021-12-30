@@ -16,6 +16,7 @@
         android:textColor="@color/yellow"
         android:textColorHint="@color/yellow"
         android:textSize="18sp"
+        android:maxLength="20"
         android:gravity="center"
         app:layout_constraintBottom_toTopOf="@+id/time_et"
         app:layout_constraintEnd_toEndOf="parent"
@@ -45,6 +46,21 @@
         android:background="@drawable/btn_press_logic"
         android:gravity="center"
         android:text="@string/start"
+        android:textColor="@color/yellow"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/time_et" />
+
+
+    <Button
+        android:id="@+id/btn_stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/btn_press_logic"
+        android:gravity="center"
+        android:text="@string/stop"
         android:textColor="@color/yellow"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
