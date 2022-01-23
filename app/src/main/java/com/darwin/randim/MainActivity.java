@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
                     Preferences.clearPreferences(getContext(), "1");
                     getUserData();
                     checkState();
+                    //makeToast(getResources().getString(R.string.tip));
                 }
             }
         });
@@ -60,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
             savePreferences(tag, time);
             Intent intent = new Intent(getApplicationContext(), BackgroundService.class);
             getApplicationContext().startService(intent);
+        BackgroundService.setServiceAlarm(getApplicationContext(), true);
     }
 
     public void savePreferences(String tag, String time){
