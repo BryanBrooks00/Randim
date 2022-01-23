@@ -118,6 +118,3 @@ public class BackgroundService extends Service {
         return null;
     }
 }
-
-
-
