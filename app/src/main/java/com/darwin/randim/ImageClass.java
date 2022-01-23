@@ -66,25 +66,27 @@ public class ImageClass {
 
     public void setWallpaper(Bitmap bitmap){
         WallpaperManager wManager;
-        Context context = MainActivity.getContext().getApplicationContext();
+        Context context = MainActivity.getContext();
         wManager = WallpaperManager.getInstance(context);
         try {
             DisplayMetrics displayMetrics = new DisplayMetrics();
             WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
             if (windowManager != null) {
                 windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+                int height = displayMetrics.heightPixels;
+                int width = displayMetrics.widthPixels;
+                //int width = wManager.getDesiredMinimumWidth();
+                //int height = wManager.getDesiredMinimumHeight();
+                Bitmap newBitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
+                wManager.setWallpaperOffsetSteps(1, 1);
+                wManager.suggestDesiredDimensions(width, height);
+                wManager.setBitmap(newBitmap);
+                Log.i(TAG, "WALLPAPER SET");
+            } else {
+                Log.i(TAG, "windowManager == null");
             }
-            int width = wManager.getDesiredMinimumWidth();
-            int height = wManager.getDesiredMinimumHeight();
-            Bitmap newBitmap = Bitmap.createScaledBitmap(bitmap,width,height, true);
-            wManager.setWallpaperOffsetSteps(1, 1);
-            wManager.suggestDesiredDimensions(width, height);
-            wManager.setBitmap(newBitmap);
-            Log.i(TAG, "WALLPAPER SET");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-
 }
