@@ -69,8 +69,7 @@ public class Connection {
         fetchItems(uriBuilder.build().toString());
         return uriBuilder.build().toString();
     }
-
-
+    
     public List<GalleryItem> fetchItems(String str) {
         List<GalleryItem> items = new ArrayList<>();
         try {
@@ -114,4 +113,3 @@ public class Connection {
         }
     }
     }
-
