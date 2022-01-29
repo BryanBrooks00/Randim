@@ -1,6 +1,6 @@
 "# Randim" 
 Privacy Policy
-Darwin Inc. built the Randim app as a Free app. This SERVICE is provided by Darwin Inc. at no cost and is intended for use as is.
+Darwin Inc. built the Randim app.
 
 This page is used to inform visitors regarding my policies with the collection, use, and disclosure of Personal Information if anyone decided to use my Service.
 
